@@ -1,0 +1,19 @@
+1
+Root:	2
+0	2
+1	2
+
+2
+Root:	0
+0	2
+1	2
+
+3
+Root:	0
+0	1
+0	2
+1	2
+
+Count Viable Graphs:	3
+excluded 
+[]
