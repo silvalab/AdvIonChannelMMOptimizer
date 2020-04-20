@@ -14,19 +14,29 @@ Overview of the directories:
   -WTgv.dat: experimental data to fit in the form of "Voltage" "Normalized Conductance" "SEM/SD of Measurement"
   
   -WTgv.prototxt:  file encoding the voltage protocol to be utilized in MarkovChannel.cc.  
-          name: wtgv #name of the voltage protocol
-          source: WTgv.dat #name of the experimental data file
-          v0: -70.0 #holding potential (mV)
-          normalize: 1 #yes, normalize the output
-          FLAG: 0 #keep zero for now
-          weight: 1 #protocol weight for in the overall cost function
-          has_validation: 1 #indicates that WTgv_val.dat and WTgv_val.prototxt need to be included as well
+          
+   name: wtgv #name of the voltage protocol
+          
+   source: WTgv.dat #name of the experimental data file
+          
+   v0: -70.0 #holding potential (mV)
+          
+   normalize: 1 #yes, normalize the output
+          
+   FLAG: 0 #keep zero for now
+         
+   weight: 1 #protocol weight for in the overall cost function
+          
+   has_validation: 1 #indicates that WTgv_val.dat and WTgv_val.prototxt need to be included as well
 
-          step { # GV voltage protocol has one step. For each voltage recorded in the .dat file after holding at v0, simulate the model                   for 50 ms, outputting the maximum open probabillity (PEAK)  every 1.0 ms.
-           dt: 50.0 
-           stype: PEAK
-           stepsize: 1.0
-           }
+   step { #GV voltage protocol has one step. For each voltage recorded in the .dat file after holding at v0, simulate the model                   for 50 ms, outputting the maximum open probabillity (PEAK)  every 1.0 ms.
+      
+   dt: 50.0 
+      
+   stype: PEAK
+      
+   stepsize: 1.0
+   }
    
    -WTgv_val.dat: record the desired voltage/normalized conductances to use as additional validation points
    
@@ -71,26 +81,45 @@ Overview of the directories:
   
   **solver.txt**
   File of the simulation input parameters. 
-{  
+
 double init_mu: 0
+
 double init_std: 3.0
+
 double mut_prob: 0.5
+
 double update_mu_rates: 0 #bounds for gaussian perturbation, rates
+
 double update_std_rates: 1
+
 double update_mu_args: 0 ##bounds for gaussian perturbation, voltage dependent arguments
+
 double update_std_args: 3
+
 double gamma: 0.001 #factor to increase temperature for each worse solution encountered in simulated annealing
+
 double t0: 0.00001 #starting temperature
+
 double rate_min: -6 #ln(rate) limits to initialize
+
 double rate_max: 6
+
 double arg_min: -60 #voltage dependent arguments min and max
+
 double arg_max: 60
+
 int k_max: 1000000 #how many iterations to run the simulation
+
 int step: 1000 #can be used to manipulate the temperature
+
 int display: 10000 #how often the current best cost function and value is computed along with overfitting metrics
+
 int n_chains: 10 #number of noninteracting chains used in simulated annealing
+
 int restart: 1
+
 string AWS_S3_path: "s3://my-bucket/" #If you want to run the containerized optimization on AWS Batch, list your bucket name here for S3 saving
+
 int snapshot: 50000 #how often .model and .txt files are written to show progress
-}
+
   
