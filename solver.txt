@@ -7,15 +7,15 @@ double update_mu_args: 0
 double update_std_args: 3
 double gamma: 0.001
 double t0: 0.00001
-double rate_min: -1
-double rate_max: 1
-double arg_min: -80
+double rate_min: -5
+double rate_max: 5
+double arg_min: -60
 double arg_max: 60
-int k_max: 1000000
+int k_max: 10000
 int step: 1000
-int display: 10000
+int display: 1000
 int n_chains: 10
 int restart: 1
 string AWS_S3_path: "s3://my-bucket/"
-int snapshot: 50000
+int snapshot: 5000
 
