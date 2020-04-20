@@ -5,12 +5,13 @@ This is the main directory for the program with necessary files required run a s
 
 *NOTE: The software utilizes the Intel MKL libraries for matrix multiplication, addition, etc. Please be sure to download the libraries and amend the sample Makefile appropriately. See the Makefile section for more information*
 
-## Quickstart Guide
+## Quickstart Guide for Running on Your Own Cluster
   - Download all files
   - Install Intel MKL libraries. Update paths in Makefile and job.sh.
-  - type "make" 
-  - type "./job.sh 3 3 10 test"
-
+  - run "make" 
+  - run "./job.sh 3 3 10 test"
+## Guide for Running On AWS Batch Instance
+   
 ## Folders/File Explanations:
 
 - **Sample_Data:** 
