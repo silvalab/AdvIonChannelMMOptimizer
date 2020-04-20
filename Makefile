@@ -1,5 +1,5 @@
 #compiler
-CC = icc 
+CC = g++ 
 #update the following line for your specifc Intel MKL installation for linking and compilation
 EXTRA_LINK_LIBS = -L/export/intel/compilers_and_libraries_2017.6.256/linux/mkl/lib/intel64_lin/ -L/export/intel/compilers_and_libraries_2017.6.256/linux/compiler/lib/intel64_lin/    
 #update the following line for Intel MKL headers
