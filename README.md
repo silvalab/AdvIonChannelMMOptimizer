@@ -1,4 +1,4 @@
-# AdvIonChannelMMOptimizer
+# AdvancedIonChannelMMOptimizer
 
 
 This is the main directory for the program with necessary files required run a sample K+ conductance voltage optimization. 
