@@ -14,6 +14,8 @@ This is the main directory for the program with necessary files required run a s
    
 ## Folders/File Explanations:
 
+- **BMKFiles:**
+    Output .txt output files for all rooted graphs by size. Please see https://users.cecs.anu.edu.au/~bdm/
 - **Sample_Data:** 
 
   Includes sample files: WTgv.dat, WTgv.prototxt, WTgv_val.dat, WTgv_val.prototxt, protocolsWT.lst, and validationWT.lst. 
