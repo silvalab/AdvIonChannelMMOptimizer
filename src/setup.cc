@@ -39,7 +39,7 @@ void Setup::extract_model_params(std::ifstream& model_list){
 				roots.push_back(root);
 				getline(model_list,line);
 				std::vector<int> edge;
-				while(line.length() != 1){
+				while(line.length() > 1){
 					//std::cout << line << std::endl;//read in the edges until the white space 
 					//std::cout << "line length" << line.length() << std::endl;
 					std::stringstream ss(line);
