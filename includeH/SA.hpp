@@ -44,7 +44,8 @@ class SA{
 	std::vector<int> r;
 	std::vector<double> T_j;
 	Model fmin_model;
-	int S3_modelfiles(int N, std::string S3_bucket_path)
+	int S3_modelfiles(int N, std::string S3_bucket_path);
+	
 	public:
 	SA(std::string,int time);
 	SA(std::string,int time,Restart_params& restart_params);
