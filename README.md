@@ -1,15 +1,23 @@
 # Advanced Ion Channel Markov Model Optimizer
 
 
-This is the main directory for the program with necessary files required run a sample K+ conductance voltage optimization. 
+## Run a Containerized Sample K+ GV Optimization
 
-*NOTE: The software utilizes the Intel MKL libraries for matrix multiplication, addition, etc. Please be sure to download the libraries and amend the sample Makefile appropriately. See the Makefile section for more information*
+  - Download and install Docker for your operating system. https://www.docker.com/get-started
+  - To verify your installation was successful, execute: 
+      - docker run hello-world
+  
+  -  If successfull, run:
+      - docker pull mangoldk/silvalabwustl:k_sample_opt2
+      - docker run mangoldk/silvalabwustl:k_sample_opt2
+
+
 ## Quickstart Guide for Running on Your Own Cluster
   - Download all files
   - Install Intel MKL libraries. Update paths in Makefile and job.sh.
   - run "make" 
   - run "./job.sh 3 3 10 test"
-
+*NOTE: The software utilizes the Intel MKL libraries for matrix multiplication, addition, etc. Please be sure to download the libraries and amend the sample Makefile appropriately. See the Makefile section for more information*
    
 ## Folders/File Explanations:
 
