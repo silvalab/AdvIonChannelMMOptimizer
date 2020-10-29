@@ -7,17 +7,29 @@
   - To verify your installation was successful, execute: 
       - docker run hello-world
   
-  -  If successfull, run:
+  -  If installation was successful, run:
       - docker pull mangoldk/silvalabwustl:k_sample_opt2
       - docker run mangoldk/silvalabwustl:k_sample_opt2
 
 
-## Quickstart Guide for Running on Your Own Cluster
+## Quickstart Guide for Running on Your Own System
+
+*Important! The software utilizes the Intel MKL libraries for matrix multiplication, addition, etc. Please be sure to download the libraries and amend the sample Makefile appropriately. See the Makefile section for more information*
+
   - Download all files
   - Install Intel MKL libraries. Update paths in Makefile and job.sh.
   - run "make" 
-  - run "./job.sh 3 3 10 test"
-*NOTE: The software utilizes the Intel MKL libraries for matrix multiplication, addition, etc. Please be sure to download the libraries and amend the sample Makefile appropriately. See the Makefile section for more information*
+  - run "./job.sh 3 3 10 test" 
+  
+  (This command also runs in containerized example above.)
+  
+  -The arguments '3 3 10 test' indicate:
+  
+    - Optimize a model with three states: '3'
+    - Model ID of the 3-state cyclic topology as the containerized example above: '3'
+    - Number of Optimization Starts: '10'
+    - Name of the Result Directory: 'test'
+
    
 ## Folders/File Explanations:
 
