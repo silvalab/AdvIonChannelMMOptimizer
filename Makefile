@@ -12,10 +12,10 @@ LIBS = -lmkl_intel_lp64 -lmkl_core -lmkl_intel_thread -lpthread -liomp5 -ldl -ls
 LFLAGS = $(EXTRA_LINK_LIBS) $(LIBS)
 
 
-all: Evalulator
+all: run
 
-Evalulator: main.o model.o graph.o math.o expm.o MarkovChannel.o restart.o modified_sobol.o setup.o cost.o SA.o
-	$(CC) $(CFLAGS) -o Evalulator main.o model.o graph.o math.o expm.o MarkovChannel.o restart.o modified_sobol.o setup.o cost.o SA.o $(LFLAGS)    
+run: main.o model.o graph.o math.o expm.o MarkovChannel.o restart.o modified_sobol.o setup.o cost.o SA.o
+	$(CC) $(CFLAGS) -o run main.o model.o graph.o math.o expm.o MarkovChannel.o restart.o modified_sobol.o setup.o cost.o SA.o $(LFLAGS)    
 
 main.o: src/main.cc includeH/MarkovChannel.hpp includeH/graph.hpp includeH/cost.hpp includeH/SA.hpp includeH/math.hpp includeH/helper.hpp includeH/restart.hpp 
 	$(CC) -c $(CFLAGS) $(LFLAGS) src/main.cc 
@@ -56,6 +56,6 @@ clean:
 	rm -f *.o
 	
 cleanall: clean
-	rm -f Evalulator
+	rm -f run
 
 # DO NOT DELETE THIS LINE -- make depend needs it
