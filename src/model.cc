@@ -22,8 +22,8 @@ Model::Model(int id, int N, std::vector<int> edgelist,int root, const Simulation
     G.set_topology(N,root,edgelist);
 	
 	rs.resize(P*(G.N)); 
-	rs[0] = 1;
-	rs[1] = 1;
+	rs[0] = 0;
+	rs[1] = 0;
     rk.resize(P*G.E);
     C.resize(G.N);
 	F.resize(G.N);
@@ -257,61 +257,7 @@ void Model::transition_matrix(double vm){
     }
 }
 	  	  
-double Model::mot(double vm){
-	
-	int E = G.E;
-	std::vector<double> e_vec(2*E,0);
-	vfunc(vm);	
-	rate_vector();
-	
-	cblas_dgemv(CblasRowMajor, CblasNoTrans, 2*E, P, 1.0,
-        r_vec.data(), P, vars.data(), 1, 0.0, e_vec.data(), 1); //apply voltage dependence to rates
 
-    for (int i=0; i<2*E; i++) e_vec[i] = exp(e_vec[i]);
-	
-	
-	std::vector<double> leaving_rates;
-	
-	
-	//e_vec[2*i]; 	//populate Q(e2,e1)
-   // e_vec[2*i+1]; //populate Q(e1,e2)
-	for(int i = 0; i < E; i++){
-		int e1 = G.edges[i].V1; 
-		int e2 = G.edges[i].V2;
-		if(e1 == G.root){
-			leaving_rates.push_back(e_vec[2*i+1]);
-		}
-		else if(e2 == G.root){
-			
-			leaving_rates.push_back(e_vec[2*i]);
-			
-		}
-	}
-	
-	
-	
-	if(leaving_rates.size() == 0){
-		
-		std::cout << "Warning: no leaving edges from open state found!" << std::endl;
-		
-		return 0;
-		
-	}
-	
-	
-	double scale = 0;
-	for(int i = 0; i < leaving_rates.size(); i++){
-		
-		scale += leaving_rates[i];
-		
-		
-	}
-
-	
-	return 1/scale;
-	
-	
-}
 	  
 void Model::sobol(Math& math_params,SimulationParameters& sim_params){
 	
