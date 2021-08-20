@@ -1,0 +1,13 @@
+name: WTtrace60_val
+source: WTtrace60_val.dat
+v0: -70.0
+normalize: 1
+FLAG: 0
+weight: 2
+
+step {
+	vm: 60
+	dt: 10.1
+	stype: TRACE
+	stepsize: 0.2
+}

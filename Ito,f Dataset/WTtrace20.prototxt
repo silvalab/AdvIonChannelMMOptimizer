@@ -1,0 +1,14 @@
+name: WTtrace20
+source: WTtrace20.dat
+v0: -70.0
+normalize: 1
+FLAG: 0
+weight: 2
+has_validation: 1
+
+step {
+	vm: 20
+	dt: 10.1
+	stype: TRACE
+	stepsize: 0.2
+}

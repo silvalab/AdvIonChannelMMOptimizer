@@ -1,0 +1,20 @@
+name: WTinac
+source: WTinac.dat
+v0:       -70.0
+normalize: 1
+FLAG: 0
+weight: 2
+has_validation: 1
+
+step {
+	dt: 200.0
+	stype: NONE
+	stepsize: 1.0
+}
+
+step {
+	dt: 50.0
+	vm: 40
+	stype: PEAK
+	stepsize: 1.0
+}

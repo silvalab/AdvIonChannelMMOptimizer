@@ -1,0 +1,27 @@
+name:     WTrecovery
+source:   WTrecovery.dat
+v0:       -70.0
+normalize: 1
+FLAG: 0
+weight: 3
+has_validation: 1
+
+step {
+	dt: 500.0
+	vm: 40.0
+	stype: NONE
+	stepsize: 1.0
+}
+
+step {
+	vm: -70
+	stype: NONE
+	stepsize: 1.0
+}
+
+step {
+	vm: 40.0
+	dt: 100.0
+	stype: PEAK
+	stepsize: 1.0
+}
