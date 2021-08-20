@@ -22,8 +22,8 @@ Model::Model(int id, int N, std::vector<int> edgelist,int root, const Simulation
     G.set_topology(N,root,edgelist);
 	
 	rs.resize(P*(G.N)); 
-	rs[0] = 1;
-	rs[1] = 1;
+	rs[0] = 0;
+	rs[1] = 0;
     rk.resize(P*G.E);
     C.resize(G.N);
 	F.resize(G.N);
