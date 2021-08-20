@@ -480,8 +480,8 @@ double calc_rcond(Model& m){
     return err; 
 }
 
-double model_penality(Model& m){
-  double rcond, anorm, penality = 0;
+double model_penalty(Model& m){
+  double rcond, anorm, penalty = 0;
   int N = m.G.N, E = m.G.E;
 
 
@@ -489,15 +489,15 @@ double model_penality(Model& m){
 
   for (double vm = -80; vm <= 60; vm += 20) {
     m.transition_matrix(vm);
-	penality+= calc_rcond(m);
+	penalty+= calc_rcond(m);
 	
 
   }
 	
-	penality = penality/80;
+	penalty = penalty/80;
   
-	//std::cout << "penality" << penality << std::endl;
-  return penality;
+	
+  return penalty;
 }
 
 
@@ -513,7 +513,7 @@ double cost_main(Model& m, std::vector<ProtocolParameter> protos){
   }
   
  
-  m.cost+=model_penality(m);
+  m.cost+=model_penalty(m);
   return  m.cost;
 }
 
