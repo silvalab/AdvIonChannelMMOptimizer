@@ -1,0 +1,29 @@
+name:     WTRUDB
+source:   WTRUDB_val.dat
+v0:       -100.0
+normalize: 1
+FLAG: 0
+weight: 2
+
+
+Rstep {
+	dt: 25.0
+	vm: -10
+	stype: NONE
+}
+Rstep {
+	vm: -100
+	dt: 15.0
+	stype: NONE
+}
+step {
+	vm: -100
+	stype: NONE
+}
+
+step {
+	vm: -10
+	dt: 25.0
+	stype: PEAK
+	stepsize: 0.05
+}
