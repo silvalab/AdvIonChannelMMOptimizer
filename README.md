@@ -11,6 +11,8 @@
       - docker pull mangoldk/silvalabwustl:k_sample_opt2
       - docker run mangoldk/silvalabwustl:k_sample_opt2
 
+##  Files for "Creating Ion Channel Kinetic Models with Cloud Computing"
+  -All necessary files are in the Methods Branch
 
 ## Quickstart Guide for Running on Your Own System
 
