@@ -243,7 +243,7 @@ void Model::transition_matrix(double vm){
     cblas_dgemv(CblasRowMajor, CblasNoTrans, 2*E, P, 1.0,
         r_vec.data(), P, vars.data(), 1, 0.0, e_vec.data(), 1); //apply voltage dependence to rates
 
-    for (int i=0; i<2*E; i++) e_vec[i] = exp(e_vec[i]); //exponenate the rates
+    for (int i=0; i<2*E; i++) e_vec[i] = exp(e_vec[i]); //exponentiate the rates
     
 
     for (int i=0; i<E; i++) { //populate the Q matrix with the rates. Q(i,i) is the negative sum of Q(:,i)
@@ -255,6 +255,8 @@ void Model::transition_matrix(double vm){
 	  Q[N*e2+e1] += e_vec[2*i]; 	//populate Q(e2,e1)
 	  Q[N*e1+e2] += e_vec[2*i+1]; //populate Q(e1,e2)
     }
+	
+	//print_Q();
 }
 	  	  
 
@@ -270,12 +272,12 @@ void Model::sobol(Math& math_params,SimulationParameters& sim_params){
 	
 
 	std::vector<double> Sobol_nums = math_params.sobol();
-	std::cout << "Sobol nums" << std::endl;
-	for(int i = 0; i < (math_params.get_dim()); i++){
+	// std::cout << "Sobol nums" << std::endl;
+	// for(int i = 0; i < (math_params.get_dim()); i++){
 		
-		std::cout << Sobol_nums[i] << "\t";
-	}
-	std::cout << std::endl;
+		// std::cout << Sobol_nums[i] << "\t";
+	// }
+	// std::cout << std::endl;
 	for(int i = 0; i < (((N-1)*P)); i++){
 		rs[i+2] = (Sobol_nums[i]*(rate_max-rate_min))+ rate_min;
 		
@@ -313,7 +315,7 @@ Model Model::perturb(Math& math_params,const SimulationParameters& sim_params){
     
 	
 	
-    for(int i=0; i<(P*N); i++) {
+    for(int i=2; i<(P*N); i++) {
 		n.rs[i] += r[i];
 		
     }

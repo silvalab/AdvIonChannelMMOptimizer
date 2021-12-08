@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <fstream>
+#include "helper.hpp"
 
 class SAParameter;
 class ProtocolStep;
@@ -61,27 +62,30 @@ class ProtocolParameter {
   int has_dt = 0;
   int has_vm = 0;
   int has_dt_vm = 0;
+  int has_stepsize = 0;
   int has_extra_args = 0;
-  int n_traces;
+  int n_traces = 0;
   int n_traces_full = 0;
+  int sweeps = 0;
+  int sweeps_full = 0;
   std::vector<double> vars;
   std::vector<double> data;
   std::vector<double> SE;
-  int has_validation_points;
+  int has_validation_points = 0;
   std::vector<double> full_data;
   std::vector<double> full_vars;
   std::vector<double> full_SE;
-  
-  double v0;
+  std::vector<int> trace_val_indxs;
+  double v0 = -500;
  
-  int normalize;
-  double weight;
-  int FLAG; 
+  int normalize = 0;
+  double weight = 0;
+  int FLAG = 0; 
   friend std::ostream& operator<<(std::ostream &os,ProtocolParameter protoparam); 
   std::vector<std::vector<ProtocolStep>> steps;
   std::vector<std::vector<ProtocolStep>> full_steps;
   std::string get_name() {return name;}
-  
+  ProtocolStep get_step(std::ifstream& prototxt);
   
 };
 
@@ -102,6 +106,9 @@ class ProtocolStep {
   double get_stepsize() {return stepsize;}
   std::vector<double> get_extra_args() {return extra_args;}
   friend std::ostream& operator<< (std::ostream &os,ProtocolStep protostep);
+  ProtocolStep() {}
+  ProtocolStep(double dt, StepType stype, double vm): dt(dt), stype(stype), vm(vm){}
+  ProtocolStep(double dt, StepType stype, double vm, std::vector<double> extra_args): dt(dt),stype(stype), vm(vm), extra_args(extra_args){}
   ProtocolStep(double dt, double stepsize, StepType stype, double vm): dt(dt), stepsize(stepsize), stype(stype), vm(vm){}
   ProtocolStep(double dt, double stepsize, StepType stype, double vm, std::vector<double> extra_args): dt(dt), stepsize(stepsize),stype(stype), vm(vm), extra_args(extra_args){}
   //Solver<T>(double tinit, T yinit, double tstep): told(tinit), yold(yinit), h(tstep) {}

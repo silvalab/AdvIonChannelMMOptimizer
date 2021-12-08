@@ -13,8 +13,9 @@
 std::string proto_parse(std::string line){
 	int pos = line.find(":");
 	int i = 0;
+	std::string parsed = line.substr(0, pos);
 	while(std::isspace(line[i])) i++;
-	std::string parsed = line.substr(i,pos-1);
+	parsed = line.substr(i,pos-i);
 	return parsed;
 	
 }
@@ -93,13 +94,62 @@ SimulationParameters::SimulationParameters(std::ifstream& txtfile){
 		this->restart = atoi(populate_var(txtfile,line).c_str()); 
 		
 		this->AWS_S3_path = populate_var(txtfile,line);
-		
+		//std::cout << "AWS_S3_path" << AWS_S3_path << std::endl;
 		this->snapshot = atoi(populate_var(txtfile,line).c_str()); 
 				
 		
 	}
 }
 
+ProtocolStep ProtocolParameter::get_step(std::ifstream& prototxt){
+	has_dt = 0;
+	has_vm = 0;
+	has_dt_vm = 0;
+	has_extra_args = 0;
+	has_stepsize = 0;
+	//first place is dt, second vm,third both dt and vm,fourth extra_args,5th stepsize  
+	std::vector<double> args_storage;
+	double dt, vm,stepsize;
+	stepsize = 0.05;
+	StepType stype;
+	std::string line;
+	std::getline(prototxt, line);
+	while(line.compare(0,1,"}") != 0){
+		std::string parsed = proto_parse(line); //need to get rid of white space for flexibility here
+		//std::cout << parsed << std::endl;
+		if(parsed == "dt"){ //optional but either or dt or vm needs to be provided
+		
+			dt = atof((var_parse(line)).c_str());	
+			//indicator[0]++;
+			has_dt = 1;
+		}
+		else if(parsed == "vm"){ //optional but either dt or vm needs to be provided
+
+			vm = atof((var_parse(line)).c_str());	
+			//std::cout << "vm" << vm << std::endl;
+			//indicator[1]++;
+			has_vm = 1;
+		}
+		else if(parsed == "stype"){ //required
+		
+			std::string parsed_step = var_parse(line);
+			stype = string2StepType(parsed_step);
+		}
+		else if (parsed == "stepsize") { //optinal but default is defined in class
+		
+			stepsize = atof((var_parse(line)).c_str());
+			has_stepsize = 1;
+		}
+		std::getline(prototxt, line);
+	}
+	
+	if(has_stepsize) return ProtocolStep(dt,stepsize,stype,vm);
+
+	else return ProtocolStep(dt,stype,vm);
+	
+			
+	
+}
 
 ProtocolParameter::ProtocolParameter(std::string prototxt_path){
 	
@@ -164,6 +214,7 @@ ProtocolParameter::ProtocolParameter(std::string prototxt_path){
 			this->full_data = this->data;
 			this->full_SE = this->SE;
 			//populate full_data,full_vars,full_SE
+			
 			while(std::getline(data2, line)){
 				
 				std::cout << line << std::endl;
@@ -175,11 +226,13 @@ ProtocolParameter::ProtocolParameter(std::string prototxt_path){
 					this->full_vars.push_back(v_read[0]);
 					this->full_data.push_back(v_read[1]); 
 					this->full_SE.push_back(v_read[2]);
+					
 				}
 				else if(v_read.size() == 2){
 					this->full_vars.push_back(v_read[0]);
 					this->full_data.push_back(v_read[1]); 
 					this->full_SE.push_back(0);
+					
 				}
 				else{
 					
@@ -188,34 +241,68 @@ ProtocolParameter::ProtocolParameter(std::string prototxt_path){
 			}
 			data2.close();
 			
-		}
-		/* std::cout << "data" << std::endl;
-		for(int k = 0; k < this->data.size(); k++){
 			
-			std::cout << this->data[k] << std::endl;
-		}
-		std::cout << "SE" << std::endl;
-		for(int k = 0; k < this->SE.size(); k++){
 			
-			std::cout << this->SE[k] << std::endl;
-		} */
+			
+			
+			
+		}
+		
 		this->n_traces = this->data.size();
-		//std::cout << "n_traces" << n_traces << std::endl;
+		this->steps.resize(n_traces);
+		if(has_validation_points){
+			this->n_traces_full = full_data.size();
+			this->full_steps.resize(n_traces_full);
+		}
+		
+		std::vector<ProtocolStep> repeat_steps;
+		
 		while(std::getline(prototxt, line)){
-			if (line.compare(0,1,"s") == 0){ // we are in a step, either dt or vm is not given
+			if (line.compare(0,1,"R") == 0){ //in a repeat step  
+					//std::cout << "R" << std::endl;
+					repeat_steps.push_back(get_step(prototxt));
+			}
+		}
+		
+		
+		if(repeat_steps.size() != 0){
+			if(has_validation_points){
+				for(int i = 0; i < n_traces_full; i++){
+					for (int pulse = 0; pulse < 99; pulse++){
+						for(int j = 0; j < repeat_steps.size(); j++){
+							full_steps[i].push_back(repeat_steps[j]);
+						}
+					}
+				}
+			}
+			for(int i = 0; i < n_traces; i++){
+				for (int pulse = 0; pulse < 99; pulse++){
+					for(int j = 0; j < repeat_steps.size(); j++){
+							
+							steps[i].push_back(repeat_steps[j]);
+						}
+				}
+			}
+		}
+		prototxt.clear();
+		prototxt.seekg (0, std::ios::beg);
+		while(std::getline(prototxt, line)){
+			if (line.compare(0,2,"st") == 0){ // we are in a step, either dt or vm is not given
+				//std::cout << "in regular step" << std::endl;
 				has_dt = 0;
 				has_vm = 0;
 				has_dt_vm = 0;
 				has_extra_args = 0;
 				//first place is dt, second vm,third both dt and vm,fourth extra_args,5th stepsize  
 				std::vector<double> args_storage;
-				double dt, vm,stepsize;
-				//stepsize = 0.05;
+				double dt = 0;
+				double vm = -500;
+				double stepsize = 0.05;
 				StepType stype;
 				std::getline(prototxt, line);
 				while(line.compare(0,1,"}") != 0){
 					std::string parsed = proto_parse(line); //need to get rid of white space for flexibility here
-					//std::cout << parsed << std::endl;
+					std::cout << parsed << std::endl;
 					if(parsed == "dt"){ //optional
 					
 						dt = atof((var_parse(line)).c_str());	
@@ -246,63 +333,84 @@ ProtocolParameter::ProtocolParameter(std::string prototxt_path){
 					}
 					std::getline(prototxt, line);
 				}
-				if( stype == TRACE ){
-					this->n_traces = 1;
-					//std::cout << "n_traces" << n_traces << std::endl;
-				}
-				else{
-					this->n_traces = this->data.size();
-					if(has_validation_points) this->n_traces_full = full_data.size();
-					//std::cout << "n_traces" << n_traces << std::endl;
-					//std::cout << "n_traces_full" << n_traces_full << std::endl;
-				}
-				//for i < n_traces create new protocolsteps with missing compnent drawn from vars
 				
+		
+		
+		if( stype == TRACE ){
+					this->sweeps = 1;
+					this->steps.resize(sweeps);
 				if(has_validation_points){
+					std::vector<double> trace_val_times;
+					this->sweeps_full = 1;
+					this->full_steps.resize(sweeps_full);
 					
+					for (int i = n_traces; i < n_traces_full; i++){
+						trace_val_times.push_back(this->full_vars[i]);
+					}
+					std::cout << "trace_val_times" << std::endl;
+					disp(trace_val_times);
 					
-					this->full_steps.resize(n_traces_full);
-					if (has_dt && has_vm) has_dt_vm =1;
+					for(int i = 0; i < trace_val_times.size(); i++){
+						
+						this->trace_val_indxs.push_back(find(this->vars, trace_val_times[i]));
+							
+					} 
 					
-						for (int i= 0; i < n_traces_full; i++){
-						//std::cout << "hello1 from dta nd vm" << std::endl;
-						if(has_extra_args){ //extra arg present 
-							if(has_dt_vm) //both dt and vm populated
-								full_steps[i].push_back(ProtocolStep(dt,stepsize,stype,vm,args_storage));
-							else{ //either dt or vm is missing
-								if(has_dt){ //dt is present, need to import vm from vars
-									full_steps[i].push_back(ProtocolStep(dt,stepsize,stype,this->full_vars[i],args_storage));
+					disp(trace_val_indxs);
+				}
+				
+				
+		}
+		else{
+			
+			this->sweeps = this->data.size();
+			this->sweeps_full = full_data.size();
+		}
+		
+				
+				if (has_dt && has_vm) has_dt_vm = 1;
+				 if(has_validation_points){
+					
+					/* std::cout << dt << std::endl;
+					std::cout << stepsize << std::endl;
+					std::cout << stype << std::endl;
+					std::cout << "vm" << vm << std::endl; */
+					
+						for (int i= 0; i < sweeps_full; i++){
+							
+							if(has_extra_args){ //extra arg present 
+							std::cout << "extra args" << std::endl;
+								if(has_dt_vm) //both dt and vm populated
+									full_steps[i].push_back(ProtocolStep(dt,stepsize,stype,vm,args_storage));
+								else{ //either dt or vm is missing
+									if(has_dt){ //dt is present, need to import vm from vars
+										full_steps[i].push_back(ProtocolStep(dt,stepsize,stype,this->full_vars[i],args_storage));
+									}
+									else{ //dt is missing so input from vars
+										full_steps[i].push_back(ProtocolStep(this->full_vars[i],stepsize,stype,vm,args_storage));
+										
+									}
 								}
-								else{ //dt is missing so input from vars
-									full_steps[i].push_back(ProtocolStep(this->full_vars[i],stepsize,stype,vm,args_storage));
+							}
+							else{ // no extra args present
+								if(has_dt_vm) {//both dt and vm populated
 									
+									full_steps[i].push_back(ProtocolStep(dt,stepsize,stype,vm));
+								}
+								else{ //either dt or vm is missing
+									if(has_dt){ //dt is present, need to import vm from vars
+										full_steps[i].push_back(ProtocolStep(dt, stepsize,stype,this->full_vars[i]));
+									}
+									else{ //dt is missing so input from vars
+										full_steps[i].push_back(ProtocolStep(this->full_vars[i], stepsize,stype,vm));
+									}
 								}
 							}
-						}
-						else{ // no extra args present
-							if(has_dt_vm) {//both dt and vm populated
-								
-								full_steps[i].push_back(ProtocolStep(dt,stepsize,stype,vm));
-							}
-							else{ //either dt or vm is missing
-								if(has_dt){ //dt is present, need to import vm from vars
-									full_steps[i].push_back(ProtocolStep(dt, stepsize,stype,this->full_vars[i]));
-								}
-								else{ //dt is missing so input from vars
-									full_steps[i].push_back(ProtocolStep(this->full_vars[i], stepsize,stype,vm));
-								}
-							}
-						}
 					}
 					
-				}
+				} 
 				
-				this->steps.resize(n_traces);
-				if(!has_validation_points){
-					if (has_dt && has_vm) has_dt_vm = 1;
-				}
-				for (int i= 0; i < n_traces; i++){
-					//std::cout << "hello from dta nd vm" << std::endl;
+				for (int i= 0; i < sweeps; i++){
 					if(has_extra_args){ //extra arg present 
 						if(has_dt_vm) //both dt and vm populated
 							steps[i].push_back(ProtocolStep(dt,stepsize,stype,vm,args_storage));
@@ -330,8 +438,8 @@ ProtocolParameter::ProtocolParameter(std::string prototxt_path){
 							}
 						}
 					}
-				}
-			}
+				} 
+			} 
 		}
 	}
 }

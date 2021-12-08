@@ -38,10 +38,12 @@ void Graph::make_pair(std::vector<int> edgesinputvector){
 
 
  std::ostream& operator<< (std::ostream& os, Graph& G) {
-    for (int i=0; i<G.E; i++) {
+    os << G.root << std::endl;
+	for (int i=0; i<G.E; i++) {
       Edge& e = G.edges[i];
       os << e.V1 << "\t" << e.V2 << "\n";
     }
+	os << G.root << std::endl;
     return os;
   }
 

@@ -6,12 +6,12 @@
 #include <cstdlib>
 #include <cmath>
 #include <mkl.h>
-
+#include "mkl_lapacke.h"
 #include "model.hpp"
 #include "expm.hpp"
 #include "MarkovChannel.hpp"
-
-
+#include <algorithm> 
+//#include "helper.hpp"
 
 
 
@@ -33,7 +33,9 @@ double calculate_tau(std::vector<double> x, double v1, double v2, double v3, dou
 
 double calc_rcond(Model& m);
 
-double model_penality(Model& m);
+double calc_eigs(Model& m);
+
+double model_penalty(Model& m);
 
 std::vector<double> transpose(Model& m);
 
@@ -43,7 +45,9 @@ double peak(std::vector<double> x, bool mini);
 
 int inbounds(double output, double data, double SE);
 
-
+double print_eigenvalues( char* desc, MKL_INT n, double* wr, double* wi );
+void print_eigenvectors( char* desc, MKL_INT n, double* wi, double* v,
+      MKL_INT ldv );
 
 
 #endif

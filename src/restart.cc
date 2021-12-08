@@ -47,7 +47,7 @@ Restart_params::Restart_params(std::ifstream& restarttxtfile){
 			} 
 			if(line.compare(0,3,"uni") == 0){
 				//std::cout << line.substr(17) << std::endl;
-				random_counter_uni_real = std::stoi(line.substr(28));
+				random_counter_uni_real = std::stoll(line.substr(28));
 				std::cout << "random_counter_params_uni_real" << "\t" << random_counter_uni_real << std::endl;
 			} 
 			if(line.compare(0,1,"V") == 0){

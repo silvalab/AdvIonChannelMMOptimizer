@@ -16,7 +16,7 @@
 
 class Math {
 private:
-	int random_counter_uni_real;
+	long long random_counter_uni_real;
 	int sobol_indx;
 	int dim;
 	char* dir_num_file;
@@ -24,14 +24,14 @@ private:
 public:
 	Math() {};
 	Math(int dim,char* dir_num_file);
-	Math(int counter, int sobol_indx, int dim, char* dir_num_file);
+	Math(long long counter, int sobol_indx, int dim, char* dir_num_file);
 	void norm_dist(std::vector<double>& r,double mu, double sigma); 
 	void uni_dist(std::vector<double>& r);
 	double uni_dist();
 	double norm_dist();
 	std::vector<double> sobol();
 	int get_sobol_indx() {return sobol_indx;}
-	int get_random_counter_uni_real() {return random_counter_uni_real;}
+	long long get_random_counter_uni_real() {return random_counter_uni_real;}
 	int get_dim() {return dim;}
 };
 

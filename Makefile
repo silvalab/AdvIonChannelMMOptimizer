@@ -1,11 +1,15 @@
 #compiler
-CC = g++ 
+CC = g++
 #update the following line for your specifc Intel MKL installation for linking and compilation
-EXTRA_LINK_LIBS = -L/export/intel/compilers_and_libraries_2017.6.256/linux/mkl/lib/intel64_lin/ -L/export/intel/compilers_and_libraries_2017.6.256/linux/compiler/lib/intel64_lin/    
+#EXTRA_LINK_LIBS = -L/opt/intel/parallel_studio_xe_2018.2.046/compilers_and_libraries_2018/linux/mkl/lib/intel64_lin/ -L/opt/intel/parallel_studio_xe_2018.2.046/compilers_and_libraries_2018/linux/compiler/lib/intel64_lin/    
 #update the following line for Intel MKL headers
-INCLUDE_DIRS = -IincludeH/ -I/export/intel/compilers_and_libraries_2017.6.256/linux/mkl/include/ 
+#INCLUDE_DIRS = -IincludeH/ -I/opt/intel/parallel_studio_xe_2018.2.046/compilers_and_libraries_2018/linux/mkl/include/ 
+EXTRA_LINK_LIBS = -L/opt/intel/compilers_and_libraries_2018.2.199/linux/mkl/lib/intel64_lin/ -L/opt/intel/compilers_and_libraries_2018.2.199/linux/compiler/lib/intel64_lin/    
+#update the following line for Intel MKL headers
+INCLUDE_DIRS = -IincludeH/ -I/opt/intel/compilers_and_libraries_2018.2.199/linux/mkl/include/ 
+# -I/usr/include/mkl 
 #options to send to the compiler
-CFLAGS = $(INCLUDE_DIRS) -std=c++11  -m64 -D USE_MKL -fopenmp
+CFLAGS = $(INCLUDE_DIRS) -std=c++11  -m64 -D USE_MKL -fopenmp 
 #other libraries needed for compilation
 LIBS = -lmkl_intel_lp64 -lmkl_core -lmkl_intel_thread -lpthread -liomp5 -ldl -lstdc++
 #linker flags

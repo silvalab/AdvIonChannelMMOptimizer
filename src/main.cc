@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
 		ss.str("");
 		
 		if(restart_params.get_iterations() != (restart_params.get_k_max())){ //if where we left off is not fully finished with a start, finish that start
-			SA sa(path_restart,init.get_times(),restart_params); //create structure to finish the start 
+			SA sa(path_restart,restart_params.get_times(),restart_params); //create structure to finish the start 
 			sa.anneal_restart(math_params,init,sim_params,restart_params,out);
 		}
 		
@@ -91,13 +91,14 @@ int main(int argc, char *argv[]) {
 	} 
 	else{ // first time optimization ran		
 		
-	
 		
-		std::ifstream simtxt(argv[1]); //simulation parameters read in
+        std::ifstream simtxt(argv[1]); //simulation parameters read in
 		SimulationParameters sim_params(simtxt); //create simulation parameters object based on input solver.txt
 		
 		
 		Setup init(argv[2],argv[3],argv[4],argv[5],argv[6],argv[8],argv[9]); //read in simulation options from command line and store in Setup object
+		
+		
 		Math math_params((((init.get_N()-1)*2)+(init.edges[init.get_model()-1].size())+2),argv[7]); //set up math object that handles random number generation
 		
 		std::stringstream ss;
@@ -111,7 +112,8 @@ int main(int argc, char *argv[]) {
 		sim_params.print_sim_params(out);
 		Model working_model(init.get_model(),init.get_N(),init.edges[init.get_model()-1],init.roots[init.get_model()-1],sim_params); //load in model topology to optimize
 		
-			 for( int k = 0; k < init.get_times(); k++){
+		
+			  for( int k = 0; k < init.get_times(); k++){
 				out << "Time:" << "\t" << k+1 << std::endl;
 				ss << "Time" << k+1 << "/";
 				
@@ -121,10 +123,12 @@ int main(int argc, char *argv[]) {
 				if(result != 0) std::cout << "possible problem making time directory or exists already" << std::endl;
 				working_model.sobol(math_params,sim_params); //print sobol transformed rate rate parameters for the current topology
 				std::cout << working_model << std::endl;
+				//model_penalty(working_model);
+				
 				SA sa(path_time,k+1); //Setup simulated annealing structure
 				sa.anneal(math_params,working_model,init,sim_params,out); //anneal and find fminmodel while printing and saving optimization history,
 				
-			 }
+			 } 
 	}
 	
 	return 0;

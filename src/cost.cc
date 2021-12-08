@@ -236,9 +236,6 @@ void step_exp(Model& m, std::vector<ProtocolStep> steps, std::vector<double>& ou
 					out.push_back(vals[j]);
 				}
 			}
-			else if ( steps[i].get_stype() == MOT ) {
-				out.push_back(m.mot(vm));
-			}
 			else if ( steps[i].get_stype() == MAXPO ) {
 				double res = peak(vals);
 				out.push_back(res);
@@ -259,7 +256,7 @@ double cost(Model& m, ProtocolParameter proto, int valid_run,  Expm& Qexp){
 	double err = 0;
 	
 	if(valid_run){
-		for ( int i=0; i<proto.n_traces_full; i++ ) { //populate output vector
+		for ( int i=0; i<proto.sweeps_full; i++ ) { //populate output vector
 	  
 			m.initial_state(proto.v0);
 			step_exp(m, proto.full_steps[i],output, Qexp); 
@@ -279,21 +276,35 @@ double cost(Model& m, ProtocolParameter proto, int valid_run,  Expm& Qexp){
 				output[i] /= scale;
 			}
 		}
-		int size = output.size()-proto.n_traces;
+		int size = (proto.n_traces_full-proto.n_traces);
 		//need to only push out the error of the last data points appended for validation
-		for (int i = proto.n_traces; i < output.size(); i++) {
-			if(!inbounds(output[i],proto.full_data[i],proto.full_SE[i])){
-				dx = (output[i] - proto.full_data[i])/(proto.full_data[i]);
-				//std::cout << "dx" << dx << std::endl;
-				//std::cout << "err" << err << std::endl;
-				err += (1.0 / size) * dx * dx;
-			}//
+		if(proto.has_validation_points && proto.full_steps[0][0].get_stype() == TRACE){
+		
+			for (int i = 0; i < output.size(); i++) {
+					
+					if(contains(proto.trace_val_indxs,i)){
+						if(!inbounds(output[i],proto.full_data[i],proto.full_SE[i])){
+							dx = (output[i] - proto.full_data[i])/(proto.full_data[i]);
+							err += (1.0 / size) * dx * dx;
+						}//
+					}
+				}
+		
+		}
+		else{
+			for (int i = proto.n_traces; i < output.size(); i++) {
+				if(!inbounds(output[i],proto.full_data[i],proto.full_SE[i])){
+					dx = (output[i] - proto.full_data[i])/(proto.full_data[i]);
+					err += (1.0 / size) * dx * dx;
+				}//
 			
+			}
+		
 		}
 		//disp(output);
 	}
 	else{
-		for ( int i=0; i<proto.n_traces; i++ ) { //populate output vector
+		for ( int i=0; i<proto.sweeps; i++ ) { //populate output vector
 	  
 			m.initial_state(proto.v0);
 			step_exp(m, proto.steps[i], output, Qexp); 
@@ -313,14 +324,27 @@ double cost(Model& m, ProtocolParameter proto, int valid_run,  Expm& Qexp){
 				output[i] /= scale;
 			}
 		}
-		
-		for (int i = 0; i < output.size(); i++) {
-			if(!inbounds(output[i],proto.data[i],proto.SE[i])){
-				dx = (output[i] - proto.data[i])/(proto.data[i]);
-				err += (1.0 / n) * dx * dx;
+		if(proto.has_validation_points && proto.full_steps[0][0].get_stype() == TRACE){		
+				int size = (proto.n_traces-(proto.n_traces_full-proto.n_traces));
+					for (int i = 0; i < output.size(); i++) {
+						if(!contains(proto.trace_val_indxs,i)){
+								if(!inbounds(output[i],proto.data[i],proto.SE[i])){
+									dx = (output[i] - proto.data[i])/(proto.data[i]);
+									err += (1.0 / size) * dx * dx;
+								}//
+						}
+					}			
+		}
+		else{
+			
+			for (int i = 0; i < output.size(); i++) {
+					if(!inbounds(output[i],proto.data[i],proto.SE[i])){
+						dx = (output[i] - proto.data[i])/(proto.data[i]);
+						err += (1.0 / output.size()) * dx * dx;
+					}//
+					
 			}
 		}
-		//disp(output);
 	}
 	
 	
@@ -342,7 +366,8 @@ double cost(Model& m, ProtocolParameter proto, int valid_run, std::vector<double
 	
 	
 	if(valid_run){
-		for ( int i=0; i<proto.n_traces_full; i++ ) {
+		
+		for ( int i=0; i<proto.sweeps_full; i++ ) {
 			
 			m.initial_state(proto.v0);
 			step_exp(m,proto.full_steps[i], output, Qexp);
@@ -360,24 +385,54 @@ double cost(Model& m, ProtocolParameter proto, int valid_run, std::vector<double
 			}
 		}
 		int size = (proto.n_traces_full-proto.n_traces);
-		data.resize(size);
-		model.resize(size);
-
-		for (int i = proto.n_traces; i < output.size(); i++) {
-			model[i-proto.n_traces] = output[i];
-			data[i-proto.n_traces] = proto.full_data[i];
+		//std::cout << "size" << size << std::endl;
+		data.resize(size,0);
+		model.resize(size,0);
+		if (proto.has_validation_points && proto.full_steps[0][0].get_stype() == TRACE){
+			for(int i = 0; i < proto.trace_val_indxs.size(); i++){
+				int indx = proto.trace_val_indxs[i];
+				model[i] = output[indx];
+			}
+			
+			for (int i = proto.n_traces; i < proto.n_traces_full; i++) {
+				data[i-proto.n_traces] = proto.full_data[i];
+				
+			}
+		}
+		else{
+			
+			for (int i = proto.n_traces; i < output.size(); i++) {
+				model[i-proto.n_traces] = output[i];
+				data[i-proto.n_traces] = proto.full_data[i];
+			}
+			
 		}
 	
 	double err = 0;
 	double dx = 0;
-	for (int i = proto.n_traces; i < output.size(); i++) {
+	if(proto.has_validation_points && proto.full_steps[0][0].get_stype() == TRACE){
+		
+		for (int i = 0; i < output.size(); i++) {
+				
+				if(contains(proto.trace_val_indxs,i)){
+					if(!inbounds(output[i],proto.full_data[i],proto.full_SE[i])){
+						dx = (output[i] - proto.full_data[i])/(proto.full_data[i]);
+						err += (1.0 / size) * dx * dx;
+					}//
+				}
+			}
+		
+	}
+	else{
+		for (int i = proto.n_traces; i < output.size(); i++) {
 			if(!inbounds(output[i],proto.full_data[i],proto.full_SE[i])){
 				dx = (output[i] - proto.full_data[i])/(proto.full_data[i]);
 				err += (1.0 / size) * dx * dx;
 			}//
 			
 		}
-	
+		
+	}
 	//disp(output);
 	if (std::isnan(err))
 			return 1e6;
@@ -386,7 +441,7 @@ double cost(Model& m, ProtocolParameter proto, int valid_run, std::vector<double
 	}
 	
 	else{
-		for ( int i=0; i<proto.n_traces; i++ ) {
+		for ( int i=0; i<proto.sweeps; i++ ) {
 			
 			m.initial_state(proto.v0);
 			step_exp(m, proto.steps[i], output, Qexp);
@@ -416,13 +471,29 @@ double cost(Model& m, ProtocolParameter proto, int valid_run, std::vector<double
 		
 	double err = 0;
 	double dx = 0;
-	for (int i = 0; i < output.size(); i++) {
-			if(!inbounds(output[i],proto.data[i],proto.SE[i])){
-				dx = (output[i] - proto.data[i])/(proto.data[i]);
-				err += (1.0 / output.size()) * dx * dx;
-			}//
-			
+	if(proto.has_validation_points && proto.full_steps[0][0].get_stype() == TRACE){
+		
+		int size = (proto.n_traces-(proto.n_traces_full-proto.n_traces));
+		for (int i = 0; i < output.size(); i++) {
+			if(!contains(proto.trace_val_indxs,i)){
+					if(!inbounds(output[i],proto.data[i],proto.SE[i])){
+						dx = (output[i] - proto.data[i])/(proto.data[i]);
+						err += (1.0 / size) * dx * dx;
+					}//
+			}
 		}
+		
+	}
+	else{
+		
+		for (int i = 0; i < output.size(); i++) {
+				if(!inbounds(output[i],proto.data[i],proto.SE[i])){
+					dx = (output[i] - proto.data[i])/(proto.data[i]);
+					err += (1.0 / output.size()) * dx * dx;
+				}//
+				
+		}
+	}
 	
 //	disp(output);
 	if (std::isnan(err))
@@ -469,11 +540,13 @@ double calc_rcond(Model& m){
     dgecon_("1", &n,colQ.data(), &lda, &anorm, &rcond, w, iw, &info);
     if (info < 0) fprintf(stderr, " con failure with error %d\n", info);
 	double err = 0;
-	if(rcond < 1e-19){
+	//std::cout << "rcond" << "\t" << rcond << std::endl;
+	if(rcond < 1e-19){ //1e-19
 		//std::cout << "poorly conditioned" << std::endl;
-		double mag = rcond*1e19;
-		
-		err = log((1/mag))/log(10);
+		double mag = rcond*1e19; //1e19
+	//	std::cout << "mag" << "\t" << mag << std::endl;
+		err = log((1/mag))/log(10); //(/log(10))
+		//std::cout << "err" << "\t" << err << std::endl;
 	}
 	
 
@@ -489,16 +562,123 @@ double model_penalty(Model& m){
 
   for (double vm = -80; vm <= 60; vm += 20) {
     m.transition_matrix(vm);
+	//std::cout << "vm" << "\t" << vm << std::endl;
+	//std::cout << "transition matrix" << std::endl;
+	//m.print_Q();
 	penalty+= calc_rcond(m);
-	
+	//std::cout << "penalty" << "\t" << penalty << std::endl;
 
   }
 	
-	penalty = penalty/80;
+	penalty = penalty/8;
   
-	
+	//std::cout << "penalty" << penalty << std::endl;
   return penalty;
 }
+
+double calc_eigs(Model& m){
+		int N = m.G.N;
+		int LDA = N;
+		int LDVL = N;
+		int LDVR = N;
+		
+		 std::vector<double> colQ = transpose(m);
+		 //m.print_Q();
+	/* /* Locals */
+        int n = N, lda = LDA, ldvl = LDVL, ldvr = LDVR, info;
+        /* Local arrays */
+        double wr[N], wi[N], vl[LDVL*N], vr[LDVR*N];
+       /*  std::vector<double> a({-1.01,  3.98,  3.30,  4.43,  7.31,
+            0.86,  0.53,  8.26,  4.96, -6.43,
+           -4.60, -7.04, -3.89, -7.66, -6.16,
+            3.31,  5.29,  8.20, -7.33,  2.47,
+           -4.81,  3.55, -1.51,  6.18,  5.58}); */
+		   
+        /* Executable statements */
+       // printf( "LAPACKE_dgeev (column-major, high-level) Example Program Results\n" );
+        /* Solve eigenproblem */
+        info = LAPACKE_dgeev( LAPACK_COL_MAJOR, 'V', 'V', n, colQ.data(), lda, wr, wi,
+                        vl, ldvl, vr, ldvr );
+        /* Check for convergence */
+        if( info > 0 ) {
+                printf( "The algorithm failed to compute eigenvalues.\n" );
+                exit( 1 );
+        }
+        /* Print eigenvalues */
+        double ratio = print_eigenvalues( "Eigenvalues", n, wr, wi );
+        /* Print left eigenvectors */
+        /* print_eigenvectors( "Left eigenvectors", n, wi, vl, ldvl );
+        /* Print right eigenvectors */
+        //print_eigenvectors( "Right eigenvectors", n, wi, vr, ldvr );
+        
+		
+		//return ratio;
+		if(ratio > 10){
+			return ratio;
+		}
+		else{
+			return 0;
+		}
+	
+		
+	
+}
+
+
+double print_eigenvalues( char* desc, MKL_INT n, double* wr, double* wi ) {
+        MKL_INT j;
+        //printf( "\n %s\n", desc );
+		std::vector<double> abswr(n,0);
+		std::vector<double> abswi(n,0);
+   for( j = 0; j < n; j++ ) {
+      if( wi[j] == (double)0.0 ) {
+        // printf( " %6.2f", wr[j] );
+		 abswr[j] = fabs(wr[j]);
+      } else {
+        // printf( " (%6.2f,%6.2f)", wr[j], wi[j] );
+		 abswr[j] = sqrt(pow(wr[j],2) + pow(wi[j],2));
+      }
+   }
+   //printf( "\n" );
+   // disp(abswr);
+	std::sort(abswr.begin(),abswr.end()); 
+   //disp(abswr);
+   int not_zero_indx = 0;
+   for(int i = 0; i < n; i++){
+		if(abswr[i] > 1e-5){
+			not_zero_indx = i;
+			break;
+		}
+	}
+	//std::cout << not_zero_indx << std::endl;
+   double ratio = abswr[n-1]/abswr[not_zero_indx];
+   //ratio = log(ratio);
+   //ratio = ratio/200;
+   return ratio;
+}
+
+/* Auxiliary routine: printing eigenvectors */
+void print_eigenvectors( char* desc, MKL_INT n, double* wi, double* v, MKL_INT ldv ) {
+        MKL_INT i, j;
+        printf( "\n %s\n", desc );
+   for( i = 0; i < n; i++ ) {
+      j = 0;
+      while( j < n ) {
+         if( wi[j] == (double)0.0 ) {
+            printf( " %6.2f", v[i+j*ldv] );
+            j++;
+         } else {
+            printf( " (%6.2f,%6.2f)", v[i+j*ldv], v[i+(j+1)*ldv] );
+            printf( " (%6.2f,%6.2f)", v[i+j*ldv], -v[i+(j+1)*ldv] );
+            j += 2;
+         }
+      }
+      printf( "\n" );
+   }
+}
+
+
+
 
 
 
@@ -514,6 +694,8 @@ double cost_main(Model& m, std::vector<ProtocolParameter> protos){
   
  
   m.cost+=model_penalty(m);
+  
+  if(m.cost > 1e8) m.cost = 1e8;
   return  m.cost;
 }
 

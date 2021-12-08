@@ -1,5 +1,5 @@
 #include "setup.hpp"
-
+#include <unistd.h>
 
 Setup::Setup(char* proto_path,char* valid_path,char* N, char* model_list_path,char* model,char* times,char* version){
 	
@@ -10,8 +10,8 @@ Setup::Setup(char* proto_path,char* valid_path,char* N, char* model_list_path,ch
 	this->version = version;
 	extract_model_params(model_list);
 	load_protocols(proto_path,protos);
-	//std::cout << proto_path << std::endl;
-	//std::cout << valid_path << std::endl;
+	std::cout << proto_path << std::endl;
+	std::cout << valid_path << std::endl;
 	load_protocols(valid_path,valids);
 	std::cout << protos.size() << std::endl;
 	std::cout << valids.size() << std::endl;
@@ -39,7 +39,7 @@ void Setup::extract_model_params(std::ifstream& model_list){
 				roots.push_back(root);
 				getline(model_list,line);
 				std::vector<int> edge;
-				while(line.length() > 1){
+				while(line.length() != 1){
 					//std::cout << line << std::endl;//read in the edges until the white space 
 					//std::cout << "line length" << line.length() << std::endl;
 					std::stringstream ss(line);

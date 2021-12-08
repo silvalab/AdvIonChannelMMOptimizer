@@ -116,5 +116,25 @@ std::vector<T> transpose(std::vector<T>& matrix, int rows, int cols){
 	return new_matrix;
 }
 
+template<typename T>
+int find(std::vector<T> v, T x){
 
+	for(int i = 0; i < v.size(); i++){
+		if(v[i] == x) return i;
+	
+	}
+
+	return v.size();
+}
+
+template<typename T>
+int contains(std::vector<T> v, T x){
+
+	for(int i = 0; i < v.size(); i++){
+		if(v[i] == x) return 1;
+	
+	}
+
+	return 0;
+}
 

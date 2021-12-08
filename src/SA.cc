@@ -68,7 +68,7 @@ int SA::inc3(std::vector<double> v){ // needs to be size 4
 	//for your problem!
 	
 	if(v[0] < v[1] && v[1] < v[2] && v[2] < v[3]){
-	std::cout << v[0] << "<" << v[1] << "<" << v[2] << "<" << v[3] << std::endl;		
+	//std::cout << v[0] << "<" << v[1] << "<" << v[2] << "<" << v[3] << std::endl;		
 		return 1;
 		
 	}
@@ -103,15 +103,15 @@ int SA::S3_modelfiles(int N, std::string S3_bucket_path){ //call this function t
 	pid_t pid;
 	pid = fork();
 	int status;
-	//std::cout << "dir" << dir << std::endl;
+	std::cout << "S3 bucket path" << S3_bucket_path  << std::endl;
 	std::stringstream ss;
 	ss << S3_bucket_path << "State" << N << "/" << version << "/";
 	std::string path_dest = ss.str();
-	//std::cout << "path_dest" << path_dest << std::endl;
+	std::cout << "path_dest" << path_dest << std::endl;
 	std::stringstream ss1;
 	ss1 << "./State" << N << "/" << version << "/";
 	std::string path_origin = ss1.str();
-	//std::cout << "dir" << dir << std::endl;
+	std::cout << "dir" << path_origin << std::endl;
 	if(pid == 0){
 		 execl("/usr/bin/aws", "aws", "s3","sync",path_origin.c_str(),path_dest.c_str(),(char*)NULL); //actual calling to S3
 		_exit(127);
@@ -165,7 +165,7 @@ void SA::print_display(std::ofstream& out, Model m, Setup s, Math math_params, i
 		const int display = sim_params.display;
 		const int k_max = sim_params.k_max;
 		out << i <<"\t" << fmin_val;
-		std::cout  << i << std::endl;
+		//std::cout  << i << std::endl;
 		auto costs_comps = cost_comp(fmin_model,s.protos);
 		std::ostringstream ss;
 		for(int k = 0; k < costs_comps.size(); k++){
@@ -186,12 +186,12 @@ void SA::print_display(std::ofstream& out, Model m, Setup s, Math math_params, i
 	
 		cost_val_history.push_back(cost_validation(fmin_model,s.protos,s.valids));
 		double GL = generalization_loss();
-		std::cout << "GL" << GL << std::endl;
-		std::cout << "validation error" << cost_val_history.back() << std::endl;
+		//out << "GL" << GL << std::endl;
+		//out << "validation error" << cost_val_history.back() << std::endl;
 		double progressv = progress(display);
-		std::cout << "progress" << progressv << std::endl;
+		//out << "progress" << progressv << std::endl;
 		double PQ = GL/progressv;
-		std::cout << "generalization loss /progress" << PQ << std::endl;
+		//out << "generalization loss /progress" << PQ << std::endl;
 		PQ_history.push_back(PQ);
 		state << "States:" << "\t" << m.G.N << std::endl;
 		state << "Model:" << "\t" << m.get_id() << std::endl;
@@ -199,11 +199,11 @@ void SA::print_display(std::ofstream& out, Model m, Setup s, Math math_params, i
 		state << "Iterations completed:" << "\t" << i << "\t" << "out of" << "\t" << k_max << std::endl;
 		state << "Sobol Indx:" << "\t" << math_params.get_sobol_indx() << std::endl;
 		state << "uni_Random Counter_uni_real:" << "\t" << math_params.get_random_counter_uni_real() << std::endl;
-		std::cout << "uni_Random Counter_uni_real:" << "\t" << math_params.get_random_counter_uni_real() << std::endl;
+		//std::cout << "uni_Random Counter_uni_real:" << "\t" << math_params.get_random_counter_uni_real() << std::endl;
 		state << "r vector:" << std::endl;
 		print(r,state);
-		std::cout << " r vector" << std::endl;
-		disp(r);
+		//std::cout << " r vector" << std::endl;
+		//disp(r);
 		state << "Cost History" << std::endl;
 		print(cost_tr_history,state);
 		state << "Validate Vector" << std::endl;
@@ -221,26 +221,26 @@ void SA::print_display(std::ofstream& out, Model m, Setup s, Math math_params, i
 		}
 	
 	
-	
+    S3_modelfiles(fmin_model.G.N,sim_params.AWS_S3_path);
 	
 }
 
 void SA::print_snapshot(std::ofstream& out, Setup s, int i){
 
 		//populate the progress files with model parameters and associated fits
-		std::ostringstream iss; 
+		/* std::ostringstream iss; 
 		std::string snapshot_file;
 		iss << path << "iter_" << i << ".model";
-		snapshot_file = iss.str(); 
+		snapshot_file = iss.str();  */
 	
 		std::ostringstream mss; 
 		std::string modelfit_file;
 		mss << path << "iter_" << i << ".txt";
 		modelfit_file = mss.str();
 
-		std::ofstream fss(snapshot_file.c_str());
-		fss << (fmin_model) << std::endl;
-		fss.close(); 
+		 /* std::ofstream fss(snapshot_file.c_str());
+		fss << (fmin_model) << std::endl; 
+		fss.close();  */
 		std::ofstream os(modelfit_file.c_str());
 		os << (fmin_model) << std::endl;
 				
@@ -248,7 +248,7 @@ void SA::print_snapshot(std::ofstream& out, Setup s, int i){
 		std::vector<double> modelval1;
 		std::vector<double> data1;
 		os << "TRAINING" << std::endl;
-		os << "cost" << fmin_val << std::endl;
+		os << "cost" << "\t" << fmin_val << std::endl;
 		
 		auto costs_comps = cost_comp(fmin_model,s.protos);
 		for(int k = 0; k < costs_comps.size(); k++){
@@ -259,7 +259,7 @@ void SA::print_snapshot(std::ofstream& out, Setup s, int i){
 			os << std::endl;
 			
 		auto validation_cost_comp = cost_validation_comp(fmin_model,s.protos,s.valids);
-		os << "Validation Cost" << sum(validation_cost_comp) << std::endl;
+		os << "Validation Cost"  << "\t" << sum(validation_cost_comp) << std::endl;
 		for(int k = 0; k < validation_cost_comp.size(); k++){
 		
 			os << validation_cost_comp[k] << "\t";
@@ -318,7 +318,7 @@ void SA::print_snapshot(std::ofstream& out, Setup s, int i){
 		modelval1.clear();
 		os << std::endl;
 		} 
-		//S3_modelfiles(N,version);
+		
 		os.close(); 
 			
 		
@@ -362,8 +362,8 @@ void SA::anneal_restart(Math& math_params, Setup& s, SimulationParameters& sim_p
 	for (int i=restart_params.get_iterations()+1; i<= k_max; i++) {
 	
 		 if (i % step == 0) {
-			std::cout << "i" << i << std::endl;	
 			disp(restart_params.r);
+			disp(T_j);
 		} 
 		for ( int j=0; j<n_chains; j++ ) {
 			
@@ -415,6 +415,15 @@ void SA::anneal_restart(Math& math_params, Setup& s, SimulationParameters& sim_p
 		}
 		cost_tr_history.push_back(fmin_val);
 		
+		
+		if (i % snapshot == 0 ) { //snapshot needs be multiple of display mods
+				
+			//S3_modelfiles(N, S3_bucket_path);
+			print_snapshot(out,s,i);
+			
+		} 
+		
+		
 		if (i % display == 0){
 			
 			print_display(out,fmin_model,s,math_params,i,sim_params);
@@ -426,12 +435,7 @@ void SA::anneal_restart(Math& math_params, Setup& s, SimulationParameters& sim_p
 				
 			} 			
 		}
-		if (i % snapshot == 0 ) { //snapshot needs be multiple of display mods
-				
-			//S3_modelfiles(N, S3_bucket_path);
-			print_snapshot(out,s,i);
-			
-		} 
+		
 	}
 	
 	
@@ -452,7 +456,7 @@ void SA::anneal(Math& math_params, Model& m, Setup& s, SimulationParameters& sim
 
 	models.resize(n_chains,m);
 	f_val.resize(n_chains, 1e12);
-	r.resize(n_chains);
+	r.resize(n_chains,0);
 	T_j.resize(n_chains,T0);
 	for (int i = 0; i < n_chains; i++){ //initialize a chain of new models
 
@@ -469,10 +473,11 @@ void SA::anneal(Math& math_params, Model& m, Setup& s, SimulationParameters& sim
 	for (int i=0; i<= k_max; i++){
 		
 		
-		if (i % step == 0) {
-			std::cout << "i" << i << std::endl;		
+		/* if (i % step == 0) {
+			//std::cout << "i" << i << std::endl;		
 			disp(r);
-		}
+			disp(T_j);
+		} */
 		
 		
 		for ( int j=0; j<n_chains; j++ ) {
@@ -529,8 +534,16 @@ void SA::anneal(Math& math_params, Model& m, Setup& s, SimulationParameters& sim
 	
 		cost_tr_history.push_back(fmin_val); //save cost history for calculating progress
 		
-		if (i % display == 0){
+		
+		if (i % snapshot == 0 ) { //snapshot needs be multiple of display mods
+				
+			//S3_modelfiles(N, S3_bucket_path);
+			print_snapshot(out,s,i);
 			
+		} //snapshot
+		
+		if (i % display == 0){
+			std::cout << i << "\t" << fmin_val << std::endl;
 			print_display(out,m,s,math_params,i,sim_params);
 			
 			 if(detect_overfitting()){
@@ -543,12 +556,7 @@ void SA::anneal(Math& math_params, Model& m, Setup& s, SimulationParameters& sim
 			
 			
 		}//display
-		if (i % snapshot == 0 ) { //snapshot needs be multiple of display mods
-				
-			//S3_modelfiles(N, S3_bucket_path);
-			print_snapshot(out,s,i);
-			
-		} //snapshot
+		
 	
 	}// i iter
 }

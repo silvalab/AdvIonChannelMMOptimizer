@@ -14,7 +14,7 @@ Math::Math(int dim,char* dir_num_file){
 	
 	
 }
-Math::Math(int counter, int sobol_indx, int dim,char* dir_num_file){
+Math::Math(long long counter, int sobol_indx, int dim,char* dir_num_file){
 	 
 	
 	mt_uni_real.seed(0);
