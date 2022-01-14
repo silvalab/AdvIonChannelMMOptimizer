@@ -135,8 +135,6 @@ def get_index_positions(list_of_elems, element):
     return index_pos_list
 
 def find_closest_biggest(list,index):
-    #print(list)
-    #print(index)
     if len(list) == 1:
         return list[0]
     mins = []
@@ -173,7 +171,6 @@ def plot_data(protocol,index,nameProto,nameDat,steps_protocol):
         if 'step {' in e:
             upper_lim = find_closest_biggest(index,idx)
             steps_protocol.append(Step_Info())
-            #print("upper_lim",upper_lim)
             for line in range(idx,upper_lim,1):
                 if 'vm' in nameProto[line]:
                     #print(nameProto[line])
@@ -187,9 +184,6 @@ def plot_data(protocol,index,nameProto,nameDat,steps_protocol):
                     dt = nameProto[line][x+2:]
                     steps_protocol[-1].dt = float(dt)
                     #print(steps_protocol[-1].dt)
-    
-    
-    
     
     
     # name.dat
@@ -227,8 +221,7 @@ def plot_data(protocol,index,nameProto,nameDat,steps_protocol):
             s.y = [float(z) for z in y]
             s.error = [float(z) for z in error]
     #call step draw function here with dt,vm, v0....
-    #print(type(s.dt))
-    #print(type(s.vm))
+   
     vm_prev = float(v0)
     hp = HP(float(v0))
     hp.draw()
@@ -296,16 +289,6 @@ def plot_data(protocol,index,nameProto,nameDat,steps_protocol):
     plt.show()
         
 
-
-
-
-
-
-
-
-
-
-
 def extract_data(protocol):
     nameProto = []
     nameDat = []
@@ -314,8 +297,6 @@ def extract_data(protocol):
 
     Dat = []
     #DatVal = []
-
-    
 
 
 # find .dat column index
@@ -373,27 +354,6 @@ def extract_data(protocol):
     for e in range(0,numrow-1):
         nameDat.append(Dat[e*3]+" "+Dat[e*3+1]+" "+Dat[e*3+2])
     userInput.close()
-
-    # userInput = open('sampleData.csv','r')
-    # reader = pd.read_csv(userInput,skipinitialspace=True)
-    # dat = reader.iloc[:,[counterVal,counterVal+1,counterVal+2]]
-    # dat = dat.dropna()
-
-    # numrow = len(dat)
-    # col = dat.head(numrow)
-    # clmn = list(col)
-
-    #for e in range(1,numrow):
-        #for i in clmn:
-            #DatVal.append(col[i][e])
-
-    #for e in range(0,numrow-1):
-        #name_valDat.append(DatVal[e*3]+" "+DatVal[e*3+1]+" "+DatVal[e*3+2])
-    userInput.close()
-
-
-
-
             
     nameProto = list(filter(None, nameProto))
     #name_valProto = list(filter(None, name_valProto))
