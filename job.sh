@@ -1,13 +1,9 @@
 #!/bin/bash
-echo $1
-echo $2
-echo $3 
-echo $4
 
-pip install pandas
+pip3 install pandas
 
 
-python import_and_run.py
+python3 import_and_run.py
 dos2unix solver.txt
 
 	
