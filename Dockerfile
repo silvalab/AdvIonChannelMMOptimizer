@@ -7,9 +7,9 @@ RUN yum -y install which unzip aws-cli \
 	&& yum install intel-mkl-2018.2-046 -y \
 	&& yum install gcc-c++ -y \
 	&& yum install make -y \
-	&& yum install python -y \
+	&& yum install python3 -y \
 	&& yum install dos2unix -y \
-	&& yum install python-pip -y \
+	&& yum install python3-pip -y \
 	&& rm -rf /var/cache/yum/
 
 FROM builder AS deploy	
