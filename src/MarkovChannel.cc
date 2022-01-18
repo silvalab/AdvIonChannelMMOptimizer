@@ -302,7 +302,7 @@ ProtocolParameter::ProtocolParameter(std::string prototxt_path){
 				std::getline(prototxt, line);
 				while(line.compare(0,1,"}") != 0){
 					std::string parsed = proto_parse(line); //need to get rid of white space for flexibility here
-					std::cout << parsed << std::endl;
+					//std::cout << parsed << std::endl;
 					if(parsed == "dt"){ //optional
 					
 						dt = atof((var_parse(line)).c_str());	
@@ -370,11 +370,6 @@ ProtocolParameter::ProtocolParameter(std::string prototxt_path){
 				
 				if (has_dt && has_vm) has_dt_vm = 1;
 				 if(has_validation_points){
-					
-					/* std::cout << dt << std::endl;
-					//std::cout << stepsize << std::endl;
-					//std::cout << stype << std::endl;
-					//std::cout << "vm" << vm << std::endl; */
 					
 						for (int i= 0; i < sweeps_full; i++){
 							
