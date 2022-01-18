@@ -2,7 +2,6 @@ import sys
 import networkx as nx
 import matplotlib.pyplot as plt
 import numpy as np
-import tkinter 
 import csv
 from collections import Counter
 
