@@ -1,21 +1,13 @@
 #!/bin/bash
 echo Your container args are: "$@"
-echo $1
-echo $2
-echo $3 
-echo $4
 
-pip install pandas
+
+pip3 install pandas
 cd /usr/src/dockerdeploy/
 
 
-python import_and_run.py
+python3 import_and_run.py
 dos2unix solver.txt
-
-echo $AWS_ACCESS_KEY_ID
-echo $AWS_SECRET_ACCESS_KEY
-aws configure list
-aws s3 ls --profile=default
 	
 if [ $# -eq 5 ] 
 then
