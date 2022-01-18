@@ -88,7 +88,7 @@ def convert_and_parse(file, N,degree_threshold,cycle_length_threshold):
 			exclude_indices.append(counter)
 		line = file.readline()
 	fparsed.write(f'Count Included Graphs:\t{counter_include}\n')
-	#print("Count Included Graphs:\t" + str(counter_include) + "\n")
+	print("Count Included Graphs:\t" + str(counter_include) + "\n")
 	fparsed.write("not viable indices\n")
 	fparsed.write(str(exclude_indices))	
 	fparsed.close()
