@@ -10,11 +10,11 @@ Setup::Setup(char* proto_path,char* valid_path,char* N, char* model_list_path,ch
 	this->version = version;
 	extract_model_params(model_list);
 	load_protocols(proto_path,protos);
-	std::cout << proto_path << std::endl;
-	std::cout << valid_path << std::endl;
+	//std::cout << proto_path << std::endl;
+	//std::cout << valid_path << std::endl;
 	load_protocols(valid_path,valids);
-	std::cout << protos.size() << std::endl;
-	std::cout << valids.size() << std::endl;
+	//std::cout << protos.size() << std::endl;
+	//std::cout << valids.size() << std::endl;
   }
   
  
@@ -112,7 +112,7 @@ std::string Setup::get_model_pwd_and_create_storage_directories(){
 
 		std::string pwd = getexepath();
 		
-		std::cout << pwd << std::endl;
+		//std::cout << pwd << std::endl;
 		
 		
 		std::stringstream ss;
@@ -121,7 +121,7 @@ std::string Setup::get_model_pwd_and_create_storage_directories(){
 		
 		
 		std::string path_version = ss.str();
-		std::cout << path_version << std::endl;
+		//std::cout << path_version << std::endl;
 		struct stat statbuf;
 		int isDir = 0;
 		if (stat(path_version.c_str(), &statbuf) != -1) {
