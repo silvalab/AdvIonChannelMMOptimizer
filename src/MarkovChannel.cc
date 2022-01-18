@@ -174,7 +174,7 @@ ProtocolParameter::ProtocolParameter(std::string prototxt_path){
 		std::ifstream data;
 		std::string data_path = pth+source;
 		data.open(data_path);
-		std::cout << pth+source << std::endl;
+		//std::cout << pth+source << std::endl;
 		
 		while(std::getline(data, line)){
 			//std::cout << line << std::endl;
@@ -204,9 +204,9 @@ ProtocolParameter::ProtocolParameter(std::string prototxt_path){
 			int i = source.length()-1;
 			while (source[i] != '.') i--;
 			name = source.substr(0, i);
-			std::cout << name << std::endl;
+			//std::cout << name << std::endl;
 			std::string data_path = pth+name+"_val.dat";
-			std::cout << data_path << std::endl;
+			//std::cout << data_path << std::endl;
 			std::ifstream data2;
 			data2.open(data_path);
 			std::string line;
@@ -217,7 +217,7 @@ ProtocolParameter::ProtocolParameter(std::string prototxt_path){
 			
 			while(std::getline(data2, line)){
 				
-				std::cout << line << std::endl;
+				//std::cout << line << std::endl;
 				std::istringstream iss(line);
 				std::vector<double> v_read;
 				double x;
@@ -347,8 +347,8 @@ ProtocolParameter::ProtocolParameter(std::string prototxt_path){
 					for (int i = n_traces; i < n_traces_full; i++){
 						trace_val_times.push_back(this->full_vars[i]);
 					}
-					std::cout << "trace_val_times" << std::endl;
-					disp(trace_val_times);
+					//std::cout << "trace_val_times" << std::endl;
+					//disp(trace_val_times);
 					
 					for(int i = 0; i < trace_val_times.size(); i++){
 						
@@ -356,7 +356,7 @@ ProtocolParameter::ProtocolParameter(std::string prototxt_path){
 							
 					} 
 					
-					disp(trace_val_indxs);
+					//disp(trace_val_indxs);
 				}
 				
 				
@@ -372,9 +372,9 @@ ProtocolParameter::ProtocolParameter(std::string prototxt_path){
 				 if(has_validation_points){
 					
 					/* std::cout << dt << std::endl;
-					std::cout << stepsize << std::endl;
-					std::cout << stype << std::endl;
-					std::cout << "vm" << vm << std::endl; */
+					//std::cout << stepsize << std::endl;
+					//std::cout << stype << std::endl;
+					//std::cout << "vm" << vm << std::endl; */
 					
 						for (int i= 0; i < sweeps_full; i++){
 							
