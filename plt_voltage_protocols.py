@@ -2,10 +2,8 @@ import subprocess, os, shlex, csv
 import pandas as pd
 from numpy import inf
 import sys
-import networkx as nx
 import matplotlib.pyplot as plt
 import numpy as np
-import tkinter 
 import math  
 from pylab import *
 
