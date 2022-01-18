@@ -71,7 +71,6 @@ def convert_and_parse(file, N,degree_threshold,cycle_length_threshold):
 		max_degree = Graph.find_max_degree()
 		#print(max_degree)
 		if max_degree <= degree_threshold:
-			counter_include = counter_include+1
 			cycles = Graph.print_cycles()
 			#print(cycles)
 			if (len(cycles) > 0):
@@ -83,7 +82,6 @@ def convert_and_parse(file, N,degree_threshold,cycle_length_threshold):
 				counter_include = counter_include+1
 				fparsed.write(f'{counter}\n')
 				Graph.print_topology(fparsed)
-				num_edges.write(f'Model:{counter_include}\t{len(Graph.edges)}\n')
 			else: #model passes degree reqs but not cycle length reqs
 				exclude_indices.append(counter)
 		else: #model already does not pass due to degree requirements
