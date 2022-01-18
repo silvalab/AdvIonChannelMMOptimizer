@@ -103,15 +103,15 @@ int SA::S3_modelfiles(int N, std::string S3_bucket_path){ //call this function t
 	pid_t pid;
 	pid = fork();
 	int status;
-	std::cout << "S3 bucket path" << S3_bucket_path  << std::endl;
+	//std::cout << "S3 bucket path" << S3_bucket_path  << std::endl;
 	std::stringstream ss;
 	ss << S3_bucket_path << "State" << N << "/" << version << "/";
 	std::string path_dest = ss.str();
-	std::cout << "path_dest" << path_dest << std::endl;
+	//std::cout << "path_dest" << path_dest << std::endl;
 	std::stringstream ss1;
 	ss1 << "./State" << N << "/" << version << "/";
 	std::string path_origin = ss1.str();
-	std::cout << "dir" << path_origin << std::endl;
+	//std::cout << "dir" << path_origin << std::endl;
 	if(pid == 0){
 		 execl("/usr/bin/aws", "aws", "s3","sync",path_origin.c_str(),path_dest.c_str(),(char*)NULL); //actual calling to S3
 		_exit(127);
