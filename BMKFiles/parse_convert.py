@@ -9,7 +9,6 @@ import sys
 import networkx as nx
 import matplotlib.pyplot as plt
 import numpy as np
-import tkinter 
 
 
 class MarkovGraph:
@@ -90,9 +89,8 @@ def convert_and_parse(file, N,degree_threshold,cycle_length_threshold):
 		else: #model already does not pass due to degree requirements
 			exclude_indices.append(counter)
 		line = file.readline()
-	print(counter_viable)
 	fparsed.write(f'Count Included Graphs:\t{counter_include}\n')
-	print("Count Included Graphs:\t" + str(counter_include) + "\n")
+	#print("Count Included Graphs:\t" + str(counter_include) + "\n")
 	fparsed.write("not viable indices\n")
 	fparsed.write(str(exclude_indices))	
 	fparsed.close()
